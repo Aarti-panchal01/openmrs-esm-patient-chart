@@ -16,6 +16,7 @@ import {
   useVisitTypes,
   Workspace2,
   type Visit,
+  type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
 import { mockLocations, mockPastVisitWithEncounters, mockVisitTypes, mockVisitWithAttributes } from '__mocks__';
 import { mockPatient } from 'tools';
@@ -32,8 +33,7 @@ import {
   useVisitFormCallbacks,
   useVisitFormSchemaAndDefaultValues,
 } from './visit-form.resource';
-import VisitForm, { type VisitFormProps } from './visit-form.workspace';
-import { type PatientWorkspace2DefinitionProps } from '@openmrs/esm-patient-common-lib/src';
+import VisitForm, { type VisitFormProps, type VisitFormWindowProps } from './visit-form.workspace';
 
 const visitUuid = 'test_visit_uuid';
 const visitAttributes = {
@@ -60,19 +60,19 @@ const visitAttributes = {
 };
 
 const mockCloseWorkspace = vi.fn();
-const mockMutateVisitContext = vi.fn();
-const defaultProps: PatientWorkspace2DefinitionProps<VisitFormProps, {}> = {
+type VisitFormWorkspaceDefinitionProps = Workspace2DefinitionProps<VisitFormProps, VisitFormWindowProps, object>;
+
+const defaultProps: VisitFormWorkspaceDefinitionProps = {
   closeWorkspace: mockCloseWorkspace,
   workspaceProps: {
     openedFrom: 'test',
   },
-  windowProps: {},
-  groupProps: {
+  windowProps: {
     patientUuid: mockPatient.id,
     patient: mockPatient,
     visitContext: null,
-    mutateVisitContext: mockMutateVisitContext,
   },
+  groupProps: {},
   workspaceName: '',
   launchChildWorkspace: vi.fn(),
   windowName: '',
@@ -350,10 +350,10 @@ describe('Visit form', () => {
       uuid: 'location-b',
     });
 
-    const props: PatientWorkspace2DefinitionProps<VisitFormProps, {}> = {
+    const props: VisitFormWorkspaceDefinitionProps = {
       ...defaultProps,
-      groupProps: {
-        ...defaultProps.groupProps,
+      windowProps: {
+        ...defaultProps.windowProps,
         visitContext: null,
       },
     };
@@ -1340,10 +1340,10 @@ describe('useVisitFormSchemaAndDefaultValues birthdate validation', () => {
 });
 
 function renderVisitForm(visitToEdit?: Visit) {
-  const props: PatientWorkspace2DefinitionProps<VisitFormProps, {}> = {
+  const props: VisitFormWorkspaceDefinitionProps = {
     ...defaultProps,
-    groupProps: {
-      ...defaultProps.groupProps,
+    windowProps: {
+      ...defaultProps.windowProps,
       visitContext: visitToEdit ?? null,
     },
   };
